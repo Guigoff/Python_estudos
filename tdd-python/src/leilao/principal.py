@@ -10,7 +10,7 @@ lance_2 = Lance(user_2, 200.0)
 
 
 
-leilao = Leilao('Carro')
+leilao = Leilao('Civic')
 leilao.lances.append(lance_1)
 leilao.lances.append(lance_2)
 
