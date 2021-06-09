@@ -1,4 +1,4 @@
-from src.leilao.dominio import Leilao, Usuario, Lance, Avaliador
+from src.leilao.dominio import Leilao, Usuario, Lance
 
 
 user_1 = Usuario('Fi')
