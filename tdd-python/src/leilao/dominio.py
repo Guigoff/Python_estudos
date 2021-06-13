@@ -1,5 +1,7 @@
 import sys
 
+from src.leilao.excecoes import LanceInvalido
+
 
 class Usuario:
 
@@ -16,11 +18,14 @@ class Usuario:
         return self.__carteira
 
     def propoe_lance(self, leilao, valor):
-        if self.__carteira >= valor:
-            leilao.propoe(Lance(self, valor))
-            self.__carteira -= valor
-        else:
-            raise ValueError('Valor do lance maior que saldo')
+        if not self._valor_valido(valor):
+            raise LanceInvalido('Valor do lance maior que saldo')
+
+        leilao.propoe(Lance(self, valor))
+        self.__carteira -= valor
+
+    def _valor_valido(self, valor):
+        return self.__carteira >= valor
 
 
 class Lance:
@@ -36,8 +41,8 @@ class Leilao:
         self.descricao = descricao
         self.__lances = []
 
-        self.maior_lance = sys.float_info.min
-        self.menor_lance = sys.float_info.max
+        self.maior_lance = 0.0
+        self.menor_lance = 0.0
 
     @property
     def lances(self):
@@ -45,12 +50,27 @@ class Leilao:
 
     def propoe(self, lance: Lance):
 
-        if not self.__lances or self.__lances[-1].usuario != lance.usuario and lance.valor > self.__lances[-1].valor:
-            if lance.valor > self.maior_lance:
-                self.maior_lance = lance.valor
-            if lance.valor < self.menor_lance:
+        if self._lance_valido(lance):
+            if not self._possui_lance():
                 self.menor_lance = lance.valor
 
+            self.maior_lance = lance.valor
             self.__lances.append(lance)
-        else:
-            raise ValueError('Erro ao propor lance')
+
+    def _possui_lance(self):
+        return self.__lances
+
+    def _usuario_diferente(self, lance):
+
+        if self.__lances[-1].usuario != lance.usuario:
+            return True
+        raise LanceInvalido('O mesmo usuário não pode dar dois lances seguidos')
+
+
+    def _lance_maior(self, lance):
+        if lance.valor > self.__lances[-1].valor:
+            return True
+        raise LanceInvalido('O valor do lance deve ser maior que o lance anterior')
+
+    def _lance_valido(self, lance):
+        return not self._possui_lance() or self._usuario_diferente(lance) and self._lance_maior(lance)
