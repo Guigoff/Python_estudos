@@ -13,6 +13,7 @@ def danilo():
 def leilao():
     return Leilao('Celular')
 
+
 def test_deve_subtrair_valor_da_carteira_do_usuario_quando_este_propor_um_lance(danilo, leilao):
     danilo.propoe_lance(leilao, 100.0)
     assert danilo.carteira == 100.0
